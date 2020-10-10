@@ -24,9 +24,9 @@ namespace CasaDoCodigo.Controllers
             this.itemPedidoRepository = itemPedidoRepository;
         }
 
-        public IActionResult Carrossel()
+        public async Task<IActionResult> Carrossel()
         {
-            return View(produtoRepository.GetProdutos());
+            return View(await produtoRepository.GetProdutos());
         }
 
         public async Task<IActionResult> Carrinho(string codigo)
@@ -52,6 +52,11 @@ namespace CasaDoCodigo.Controllers
             }
 
             return View(pedido.Cadastro);
+        }
+
+        public async Task<IActionResult> BuscaDeProdutos()
+        {
+            return View(await produtoRepository.GetProdutos());
         }
 
         [HttpPost]
