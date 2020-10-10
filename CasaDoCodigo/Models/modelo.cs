@@ -18,7 +18,6 @@ namespace CasaDoCodigo.Models
     {
         public Produto()
         {
-
         }
 
         [Required]
@@ -27,12 +26,15 @@ namespace CasaDoCodigo.Models
         public string Nome { get; private set; }
         [Required]
         public decimal Preco { get; private set; }
+        [Required]
+        public Categoria Categoria { get; private set; }
 
-        public Produto(string codigo, string nome, decimal preco)
+        public Produto(string codigo, string nome, decimal preco, Categoria categoria)
         {
-            this.Codigo = codigo;
-            this.Nome = nome;
-            this.Preco = preco;
+            Codigo = codigo;
+            Nome = nome;
+            Preco = preco;
+            Categoria = categoria;
         }
     }
 
@@ -130,5 +132,20 @@ namespace CasaDoCodigo.Models
         public List<ItemPedido> Itens { get; private set; } = new List<ItemPedido>();
         [Required]
         public virtual Cadastro Cadastro { get; private set; }
+    }
+
+    public class Categoria : BaseModel
+    {
+        public Categoria()
+        {
+        }
+
+        [Required]
+        public string Nome { get; set; }
+
+        public Categoria(string nome)
+        {
+            Nome = nome;
+        }
     }
 }
