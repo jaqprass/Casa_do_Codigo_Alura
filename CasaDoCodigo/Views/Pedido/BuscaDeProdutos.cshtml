@@ -2,7 +2,7 @@
     ViewData["Title"] = "BuscaDeProdutos";
 }
 
-@model List<Produto>;
+@model BuscaDeProdutosViewModel;
 
 <div class="container">
     <div class="row">
@@ -10,12 +10,15 @@
             <h2>Buscar produtos</h2>
             <div id="custom-search-input">
                 <div class="input-group col-md-12">
-                    <input type="text" name="pesquisa" class="form-control input-lg" placeholder="categoria ou produto" id="Pesquisa" value="" />
-                    <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="submit">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
-                    </span>
+                    <form asp-action="BuscaDeProdutos">
+                        <input type="text" class="form-control" id="pesquisa" placeholder="categoria ou produto"
+                               asp-for="@Model.Pesquisa">
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" type="submit">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </form>
                 </div>
             </div>
         </div>
@@ -24,69 +27,76 @@
 
 
 @{
-    var categorias = Model.GroupBy(c => c.Categoria).Select(g => g.Key).ToList();
-
-    foreach (var categoria in categorias)
+    @if (Model.Produtos.Count != 0)
     {
-        var produtosCategoria = Model.Where(p => p.Categoria.Id == categoria.Id);
+        var categorias = Model.Produtos.GroupBy(c => c.Categoria).Select(g => g.Key).ToList();
 
-        <h3>@categoria.Nome</h3>
-        <div id="my-carousel-@categoria.Id" class="carousel slide" data-ride="carousel">
-            <!-- Wrapper for slides -->
-            <div class="carousel-inner" role="listbox">
+        foreach (var categoria in categorias)
+        {
+            var produtosCategoria = Model.Produtos.Where(p => p.Categoria.Id == categoria.Id);
 
-                @{
-                    const int TAMANHO_PAGINA = 4;
+            <h3>@categoria.Nome</h3>
+            <div id="my-carousel-@categoria.Id" class="carousel slide" data-ride="carousel">
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
 
-                    int paginas = (int)Math.Ceiling((double)produtosCategoria.Count() / TAMANHO_PAGINA);
-                }
+                    @{
+                        const int TAMANHO_PAGINA = 4;
 
-                @for (int pagina = 0; pagina < paginas; pagina++)
-                {
+                        int paginas = (int)Math.Ceiling((double)produtosCategoria.Count() / TAMANHO_PAGINA);
+                    }
 
-                    <div class="item @(pagina == 0 ? "active" : "")">
-                        <div class="row">
+                    @for (int pagina = 0; pagina < paginas; pagina++)
+                    {
 
-                            @{
-                                var produtosDaPagina = produtosCategoria.Skip(pagina * TAMANHO_PAGINA).
-                                    Where(p => p.Categoria.Nome == categoria.Nome).Take(TAMANHO_PAGINA);
+                        <div class="item @(pagina == 0 ? "active" : "")">
+                            <div class="row">
 
-                            }
+                                @{
+                                    var produtosDaPagina = produtosCategoria.Skip(pagina * TAMANHO_PAGINA).
+                                        Where(p => p.Categoria.Nome == categoria.Nome).Take(TAMANHO_PAGINA);
 
-                            @foreach (var produto in produtosDaPagina)
-                            {
-                                <div class="col-md-3 col-sm-3 col-lg-3">
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <img class="img-produto-carrossel" src="/images/produtos/large_@(produto.Codigo).jpg" />
-                                        </div>
-                                        <div class="panel-footer produto-footer">
-                                            <div class="produto-nome">@produto.Nome</div>
-                                            <div><h4><strong>R$ @produto.Preco</strong></h4></div>
-                                            <div class="text-center">
-                                                <a asp-action="carrinho"
-                                                   asp-route-codigo="@produto.Codigo"
-                                                   class="btn btn-success">Adicionar</a>
+                                }
+
+                                @foreach (var produto in produtosDaPagina)
+                                {
+                                    <div class="col-md-3 col-sm-3 col-lg-3">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <img class="img-produto-carrossel" src="/images/produtos/large_@(produto.Codigo).jpg" />
+                                            </div>
+                                            <div class="panel-footer produto-footer">
+                                                <div class="produto-nome">@produto.Nome</div>
+                                                <div><h4><strong>R$ @produto.Preco</strong></h4></div>
+                                                <div class="text-center">
+                                                    <a asp-action="carrinho"
+                                                       asp-route-codigo="@produto.Codigo"
+                                                       class="btn btn-success">Adicionar</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
+                                }
 
+                            </div>
                         </div>
-                    </div>
-                }
-            </div>
+                    }
+                </div>
 
-            <!-- Controls -->
-            <a class="left carousel-control" href="#my-carousel-@categoria.Id" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="right carousel-control" href="#my-carousel-@categoria.Id" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
+                <!-- Controls -->
+                <a class="left carousel-control" href="#my-carousel-@categoria.Id" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#my-carousel-@categoria.Id" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-danger">Nenhum produto encontrado.</div>
     }
 }

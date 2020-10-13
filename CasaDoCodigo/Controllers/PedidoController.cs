@@ -2,9 +2,7 @@
 using CasaDoCodigo.Models.ViewModels;
 using CasaDoCodigo.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CasaDoCodigo.Controllers
@@ -13,15 +11,13 @@ namespace CasaDoCodigo.Controllers
     {
         private readonly IProdutoRepository produtoRepository;
         private readonly IPedidoRepository pedidoRepository;
-        private readonly IItemPedidoRepository itemPedidoRepository;
+        private IList<Produto> produtos;
 
         public PedidoController(IProdutoRepository produtoRepository,
-            IPedidoRepository pedidoRepository,
-            IItemPedidoRepository itemPedidoRepository)
+            IPedidoRepository pedidoRepository)
         {
             this.produtoRepository = produtoRepository;
             this.pedidoRepository = pedidoRepository;
-            this.itemPedidoRepository = itemPedidoRepository;
         }
 
         public async Task<IActionResult> Carrossel()
@@ -54,9 +50,16 @@ namespace CasaDoCodigo.Controllers
             return View(pedido.Cadastro);
         }
 
-        public async Task<IActionResult> BuscaDeProdutos()
+        public async Task<IActionResult> BuscaDeProdutos(string pesquisa)
         {
-            return View(await produtoRepository.GetProdutos());
+            if (pesquisa == null)
+                produtos = await produtoRepository.GetProdutos();
+            else
+                produtos = await produtoRepository.GetProdutos(pesquisa.ToLower());
+
+            var buscaDeProdutosViewModel = new BuscaDeProdutosViewModel(produtos);
+
+            return base.View(buscaDeProdutosViewModel);
         }
 
         [HttpPost]

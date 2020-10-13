@@ -1,6 +1,5 @@
 ﻿using CasaDoCodigo.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +19,14 @@ namespace CasaDoCodigo.Repositories
         public async Task<IList<Produto>> GetProdutos()
         {
             return await dbSet.Include(p => p.Categoria).ToListAsync();
+        }
+
+        public async Task<IList<Produto>> GetProdutos(string pesquisa)
+        {
+            return await
+                dbSet.Include(p => p.Categoria)
+                .Where(p => p.Nome.ToLower().Contains(pesquisa) || p.Categoria.Nome.ToLower().Contains(pesquisa))
+                .ToListAsync();
         }
 
         public async Task SaveProdutos(List<Livro> livros)
