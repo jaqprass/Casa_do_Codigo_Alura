@@ -19,7 +19,9 @@ namespace CasaDoCodigo.Repositories
 
         public async Task<Categoria> SaveCategoria(string nome)
         {
-            if (dbSet.Where(p => p.Nome != nome).Any())
+            var categoria = dbSet.Where(p => p.Nome == nome).SingleOrDefault();
+
+            if (categoria == null)
             {
                 categoria = dbSet.Add(new Categoria(nome)).Entity;
             }
